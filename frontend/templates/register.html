@@ -4,10 +4,10 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
   
   <title> 注册 </title> 
-  <link rel="stylesheet" href="style/css/base.css"  /> 
-  <link rel="stylesheet" href="style/css/login.css"  /> 
+  <link rel="stylesheet" href="../static/style/css/base.css"  /> 
+  <link rel="stylesheet" href="../static/style/css/login.css"  /> 
 
-  <script  type="text/javascript" src="style/js/jquery-1.7.1.min.js"></script> 
+  <script  type="text/javascript" src="../static/style/js/jquery-1.7.1.min.js"></script> 
 
 
   <!-- 验证码 -->
@@ -38,8 +38,9 @@
 
   
    <div class="banner-box"> 
-    <form id="mainForm" class="main-form" enctype="application/x-www-form-urlencoded" novalidate="novalidate"> 
-		 <div class="tab-title"> 
+    <form id="mainForm" class="main-form" enctype="application/x-www-form-urlencoded" novalidate="novalidate" action="/register/"  method="post"> 
+		{% csrf_token %}
+		<div class="tab-title"> 
 		  <a class="linkAGray" id="toAccountLogin" href="login.html">账号登录</a> 
 		  <span class="register-line"></span> 
 		  <a class="linkABlue" id="toVCodeLogin" href="register.html">账号注册</a> 
@@ -59,9 +60,8 @@
 		  </div> 
 		 </div> 
 		 <div class="normalInput fieldInput"> 
-		  <input type="text" class="inp-focus" name="Verificationcode" id="Verificationcode" maxlength="16" autocomplete="off" placeholder="验证码"  onfocus="closeErrorMsg()"/>
-		  <span id="verifyCode"  class="verify" onclick="sendsms(this);">获取验证码</span>
-		 </div> 
+			<input type="password" class="inp-focus" name="password" id="password" maxlength="16" autocomplete="off" placeholder="密码"  onfocus="closeErrorMsg()"/>
+		  </div>
 
 		 
 
@@ -81,10 +81,11 @@
   <script>
   	//点击注册事件
   	$("#register").click(function(){  
+		    console.log("点击注册事件");
     		var email = $("#email").val();
-			var Verificationcode = $("#Verificationcode").val(); //输入的验证码
+			var password = $("#password").val();
 
-			if( email=="" || Verificationcode==""){
+			if( email=="" || password==""){
 				var obj = document.getElementById("errorMsg");
 				$("#tipMsg").html("请填写完整的注册信息！");
 				obj.setAttribute("class", "tip-box visiblility-show");
@@ -102,6 +103,35 @@
 				return ;
 			}
 			//发送ajax请求
+			console.log("发送ajax请求");
+			$.ajax({
+       			type: 'POST',
+        		url: '/register/', // 确保这是正确的后端端点
+				data: {
+					email: email,
+					password: password,
+					csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+				},
+				success: function(response){
+					// 处理成功的逻辑
+					if(response.code==0){
+						//注册成功
+						console.log("注册成功");
+						window.location.href = '/login/';
+					}else{
+						//提示错误信息
+						var obj = document.getElementById("errorMsg");
+						//修改提示文字
+						$("#tipMsg").html(response.msg);
+						obj.setAttribute("class", "tip-box visiblility-show");
+					}
+					
+				},
+				error: function(){
+					// 处理失败的逻辑
+					
+				}
+    });
 
 
 	});  

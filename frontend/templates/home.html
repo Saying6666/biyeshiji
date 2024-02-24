@@ -1,4 +1,3 @@
-<!-- templates/frontend/home.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +6,15 @@
     <title>Emotion Analysis</title>
 </head>
 <body>
-    <h1>Welcome to the Emotion Analysis App</h1>
-    <!-- 更多内容 -->
+<h1>Welcome to the Emotion Analysis App</h1>
+<!-- 显示用户信息 -->
+{% if user.is_authenticated %}
+    <p>你好, {{ user.username }}!</p>
+    <a href="{% url 'logout_view' %}">登出</a>
+{% else %}
+    <a href="{% url 'login' %}">登录</a> |
+    <a href="{% url 'register' %}">注册</a>
+{% endif %}
+<!-- 更多内容 -->
 </body>
 </html>
